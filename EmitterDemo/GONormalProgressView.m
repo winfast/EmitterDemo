@@ -18,6 +18,7 @@
 @property (strong, nonatomic) UIBezierPath *progressPath;
 @property (assign, nonatomic) CGFloat progress;
 
+
 //下面的数据是用来支持进度变色的属性
 @property (nonatomic, strong) CADisplayLink *displayLink;
 @property (nonatomic, assign) CFTimeInterval animationStartTime;
