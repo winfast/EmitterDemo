@@ -1,0 +1,20 @@
+PODS:
+  - KLCategory (1.3.0):
+    - KLCategory/Foundation (= 1.3.0)
+    - KLCategory/UIKit (= 1.3.0)
+  - KLCategory/Foundation (1.3.0)
+  - KLCategory/UIKit (1.3.0)
+
+DEPENDENCIES:
+  - KLCategory
+
+SPEC REPOS:
+  https://github.com/Kalanhall/Specs.git:
+    - KLCategory
+
+SPEC CHECKSUMS:
+  KLCategory: b48189676b125dd1ca028a043060915a404a3c4a
+
+PODFILE CHECKSUM: 3c8d63af2c93f49ea1680e6c665c9d2187b6209c
+
+COCOAPODS: 1.8.4
