@@ -40,6 +40,12 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
     NumberAlignmentRight,
 };
 
+typedef NS_ENUM(NSUInteger, NumberType) {
+    NumberTypeTemp,
+    NumberTypeMinute,
+    NumberTypeHour,
+};
+
 #pragma mark -
 #pragma mark - 动态数字视图
 @interface FFDynamicNumberView : UIView
@@ -49,8 +55,10 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
 @property (nonatomic, strong) UIColor *numberBackColor;        /**< 字体背景颜色 */
 @property (nonatomic, assign) NumberAlignment numberAlignment; /**< 对齐方式 */
 @property (nonatomic, assign) CGFloat numberSpace;             /**< 字体之间的间距 */
+@property (nonatomic, copy) NSString *spaceValue;
 @property (nonatomic, assign) NSInteger numberCount;           /**< 数字位数限定 */
 @property (nonatomic, assign) NSInteger currentNumber;         /**< 当前的数值 */
+@property (nonatomic) NumberType numberType;
 
 /**
  更新数字
@@ -69,6 +77,7 @@ typedef NS_ENUM(NSUInteger, NumberAlignment) {
 #pragma mark - 单个数字视图
 @interface FFSingleNunberView : UIView
 
+@property (nonatomic, strong, readonly) UILabel *numberLabel;  /**< 数字label */
 @property (nonatomic, strong) UIFont *numberFont;       /**< 字体 */
 @property (nonatomic, strong) UIColor *numberColor;     /**< 字体颜色 */
 @property (nonatomic, assign) NSInteger currentNumber; /**< 当前的数值 */

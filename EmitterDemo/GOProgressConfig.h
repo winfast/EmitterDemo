@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, GOProgressType) {
 
 @property (nonatomic, setter=setRotate:) BOOL isRotate;
 
-/// 工作圆环半径
+/// 工作圆环半径  无效, 现在使用图片
 @property (nonatomic) CGFloat progressCircleRadius;  //默认 宽*0.5
 
 /// 指针半径,默认比工作圆环半径大一点,

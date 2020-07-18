@@ -25,6 +25,8 @@ static CGSize singleNumerSize(UIFont *font) {
 @interface FFDynamicNumberView ()
 
 @property (nonatomic, strong) NSMutableArray<FFSingleNunberView *> *numberViews; /**< 数字视图列表 */
+@property (nonatomic, strong) NSMutableArray<UILabel *> *spaceViews;
+
 
 @end
 
@@ -38,6 +40,7 @@ static CGSize singleNumerSize(UIFont *font) {
         self.numberBackColor = UIColor.whiteColor;
         self.numberSpace = 5.0;
         self.currentNumber = 0;
+		self.numberType = NumberTypeTemp;
     }
     return self;
 }
@@ -47,6 +50,13 @@ static CGSize singleNumerSize(UIFont *font) {
         _numberViews = @[].mutableCopy;
     }
     return _numberViews;
+}
+
+- (NSMutableArray<UILabel *> *)spaceViews {
+    if (_spaceViews == nil) {
+        _spaceViews = @[].mutableCopy;
+    }
+    return _spaceViews;
 }
 
 /**
@@ -96,13 +106,58 @@ static CGSize singleNumerSize(UIFont *font) {
         }
     }
     self.numberViews = tempArray.mutableCopy;
+	
+	NSInteger spaceCount = 0;
+	if (self.numberType == NumberTypeTemp) {
+		spaceCount = 0;
+	} else if (NumberTypeMinute == self.numberType) {
+		spaceCount = 1;
+	} else {
+		spaceCount = 2;
+	}
+	
+	if (self.spaceViews.count > spaceCount) {
+		for (int i = 0; i < self.numberViews.count - count; i++) {
+            UILabel *numberView = self.spaceViews[i];
+            [self.spaceViews removeObjectAtIndex:i];
+            [numberView removeFromSuperview];
+            numberView = nil;
+        }
+	}
+	
+    NSInteger spaceViewCount = spaceCount - self.spaceViews.count;
+    NSMutableArray *sapceTempArray = self.spaceViews.mutableCopy;
+    for (int i = 0; i < spaceViewCount; i++) {
+        UILabel *spaceView = [UILabel new];
+		spaceView.font = self.numberFont;
+		spaceView.text = self.spaceValue;
+		spaceView.textColor = self.numberColor;
+		spaceView.textAlignment = NSTextAlignmentCenter;
+        spaceView.backgroundColor = self.numberBackColor;
+        [self addSubview:spaceView];
+        if (self.spaceViews.count) {
+            [sapceTempArray insertObject:spaceView atIndex:0];
+        } else {
+            [sapceTempArray addObject:spaceView];
+        }
+    }
+    self.spaceViews = sapceTempArray.mutableCopy;
     
     // 根据对齐方式计算第一位数的x坐标
     CGFloat firstX = 0.0;
     // 单个数组的size
     CGSize numberSize = singleNumerSize(self.numberFont);
     // 所有数字占的总宽
-    CGFloat numbersWidht = count * numberSize.width + (count - 1) * self.numberSpace;
+	CGFloat numbersWidht;
+	if (self.numberType == NumberTypeTemp) {
+		numbersWidht = count * numberSize.width + (count - 1) * self.numberSpace;
+	}
+	else if (NumberTypeMinute == self.numberType) {
+		numbersWidht = count * numberSize.width + 1 * self.numberSpace;
+	} else {
+		numbersWidht = count * numberSize.width + 2 * self.numberSpace;
+	}
+    
     switch (self.numberAlignment) {
         case NumberAlignmentRight: {
             firstX = self.frame.size.width - numbersWidht;
@@ -125,13 +180,67 @@ static CGSize singleNumerSize(UIFont *font) {
     // 创建或调整数字视图
     for (int i = 0; i < count; i++) {
         FFSingleNunberView *numberView = self.numberViews[i];
-
-        // 根据对齐方式计算每个numberView的位置
-        CGFloat x = firstX + i * (numberSize.width + self.numberSpace);
-        numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+		
+		if (self.numberType == NumberTypeTemp) {
+			// 根据对齐方式计算每个numberView的位置
+			CGFloat x = firstX + i * (numberSize.width + self.numberSpace);
+			numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+			
+			// 设置数字label的高度
+			[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+		} else if (NumberTypeMinute == self.numberType) {  //要么是3位 要么是4位
+			if (i <= self.numberViews.count - 2 - 1) {
+				CGFloat x = firstX + i * numberSize.width;
+				numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+				
+				// 设置数字label的高度
+				[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+				
+				if (i == self.numberViews.count - 2 - 1) {
+					UILabel *spaceView = self.spaceViews.firstObject;
+					spaceView.frame = CGRectMake(CGRectGetMaxX(numberView.frame), (self.frame.size.height - numberSize.height) / 2, self.numberSpace, numberSize.height);
+				}
+				
+			} else {
+				CGFloat x = firstX + i * (numberSize.width) + self.numberSpace;
+				numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+				
+				// 设置数字label的高度
+				[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+			}
+		} else { //要么是5位 要么是6位
+			if (i <= self.numberViews.count - 4 - 1) {
+				CGFloat x = firstX + i * (numberSize.width);
+				numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+				
+				// 设置数字label的高度
+				[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+				
+				if (i == self.numberViews.count - 4 - 1) {
+					UILabel *spaceView = self.spaceViews.firstObject;
+					spaceView.frame = CGRectMake(CGRectGetMaxX(numberView.frame), (self.frame.size.height - numberSize.height) / 2, self.numberSpace, numberSize.height);
+				}
+				
+			} else if (i <= self.numberViews.count - 2 - 1) {
+				CGFloat x = firstX + i * (numberSize.width) + self.numberSpace;
+				numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+				
+				// 设置数字label的高度
+				[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+				
+				if (i == self.numberViews.count - 2 - 1) {
+					UILabel *spaceView = self.spaceViews.lastObject;
+					spaceView.frame = CGRectMake(CGRectGetMaxX(numberView.frame), (self.frame.size.height - numberSize.height) / 2, 10, numberSize.height);
+				}
+			} else {
+				CGFloat x = firstX + i * (numberSize.width) + 2 * self.numberSpace;
+				numberView.frame = CGRectMake(x, (self.frame.size.height - numberSize.height) / 2, numberSize.width, numberSize.height);
+				
+				// 设置数字label的高度
+				[numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
+			}
+		}
         
-        // 设置数字label的高度
-        [numberView setDispalyNumber:[self subnumberWithNumer:numbers atIndex:i] startNumber:numberView.currentNumber animation:animationType];
     }
     
     // 动态更新label到指定的数字

@@ -122,8 +122,11 @@
     __weak typeof(self) ws = self;
     __block CGFloat index = 0;
 	
-	__block NSInteger time = 0;
+	__block NSInteger time = 99990;
 	[self.progressView.numberView updateNumbers:0 animation:AnimationTypeAutomatic duration:0.5];
+	self.progressView.numberView.numberType = NumberTypeHour;
+	self.progressView.numberView.numberSpace = 10;
+	self.progressView.numberView.spaceValue = @":";
 //
 	__block NSArray *currArray = [NSArray arrayWithObjects:@(0.1),@(0.2),@(0.3),@(0.4),@(0.5), nil];
 	__block NSInteger locationCount = currArray.count;
@@ -137,7 +140,6 @@
         }
 	
 		time++;
-		self.progressView.numberView.numberCount = @(time).stringValue.length;
         [self.progressView.numberView updateNumbers:time animation:AnimationTypeAutomatic duration:0.5];
 		[ws.progressView setProgress:index animated:YES duration:1];
 		[ws.normalProgressView setProgress:index animated:YES duration:1];
@@ -149,7 +151,7 @@
     
 	GOProgressConfig *config = GOProgressConfig.alloc.init;
 	config.progressLineWidth = 12;
-	[config setShowNeedle:YES]; //不显示指针
+	[config setShowNeedle:YES]; 
 	
 	config.backgroundProgressLineWitdh = 12;
 	config.backgroundProgressLineColor = [UIColor.whiteColor colorWithAlphaComponent:0.1];

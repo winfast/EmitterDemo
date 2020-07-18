@@ -221,14 +221,14 @@
 		}
 
         self.numberView = [FFDynamicNumberView new];
-        self.numberView.frame = CGRectMake(0, 0, 200, 200);
+        self.numberView.frame = CGRectMake(0, 0, 250, 250);
         self.numberView.center = self.progressContent.center;
         self.numberView.backgroundColor = UIColor.clearColor;
         self.numberView.numberColor = UIColor.whiteColor;
         self.numberView.numberBackColor = UIColor.clearColor;
         self.numberView.numberCount = 1;
         self.numberView.numberSpace = 0;
-		self.numberView.numberFont = self.config.numberFont ?: [UIFont systemFontOfSize:80];
+		self.numberView.numberFont = self.config.numberFont ?: [UIFont systemFontOfSize:45];
         self.numberView.numberAlignment = NumberAlignmentCenter;
         [self addSubview:self.numberView];
 
@@ -356,11 +356,14 @@
 			UIColor *currProgressColor = [GOEmitterCircleProgress mixColor1:startProgressColor color2:endProgressColor ratio:ratio];
 			UIColor *currNeedleColor = [GOEmitterCircleProgress mixColor1:startNeedleColor color2:endNeedleColor ratio:ratio];
 
+			[CATransaction begin];
+			[CATransaction setDisableActions:YES];
 			self.emitterColorLayer.backgroundColor = currEmiterColor.CGColor;
 			self.borderLayer.borderColor = currProgressColor.CGColor;
 			self.innerShadowLayer.backgroundColor = currInnerColor.CGColor;
 			self.lineLayer.backgroundColor = currNeedleColor.CGColor;
 			self.outerShadowLayer.kj_shadowColor = currOuterColor;
+			[CATransaction commit];
 		}
 
 		CABasicAnimation *strokeEnd = CABasicAnimation.animation;

@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DC1E36E0-2CA5-44D2-AF2C-217E780E295F"
+            uuid = "B5CF38A1-2D51-43A2-9A5E-0CF6F9099D90"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "EmitterDemo/GOEmitterCircleProgress.m"
+            filePath = "EmitterDemo/FFDynamicNumberView.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "366"
-            endingLineNumber = "366"
-            landmarkName = "-animateProgress:"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
+            landmarkName = "-updateNumbers:animation:duration:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

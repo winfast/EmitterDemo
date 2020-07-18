@@ -212,8 +212,11 @@
 			CGFloat ratio = (self.realTimeProgress - self.config.locations[endColorIndex - 1].doubleValue)/( self.config.locations[endColorIndex].doubleValue -  self.config.locations[endColorIndex - 1].doubleValue);
 			UIColor *currInnerColor = [GONormalProgressView mixColor1:startInnerColor color2:endInnerColor ratio:ratio];
 			UIColor *currProgressColor = [GONormalProgressView mixColor1:startProgressColor color2:endProgressColor ratio:ratio];
+			[CATransaction begin];
+			[CATransaction setDisableActions:YES];
 			self.borderLayer.borderColor = currProgressColor.CGColor;
 			self.innerShadowLayer.backgroundColor = currInnerColor.CGColor;
+			[CATransaction commit];
 		}
 
 		CABasicAnimation *strokeEnd = CABasicAnimation.animation;
