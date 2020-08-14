@@ -236,6 +236,123 @@
     return self;
 }
 
+- (void)removeAllAnimation {
+	[self.progressLayer removeAnimationForKey:@"strokeEnd"];
+	[self.lineLayer removeAnimationForKey:@"rotation"];
+}
+
+- (void)setProgress:(CGFloat)startProgress endProgress:(CGFloat)endProgress duration:(CGFloat)duration {
+	
+	
+	
+//	CABasicAnimation *strokeEnd = CABasicAnimation.animation;
+//	strokeEnd.keyPath = @"strokeEnd";
+//	strokeEnd.duration = 1;
+//	strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+//	//strokeEnd.fromValue = @(startProgress);
+//	strokeEnd.toValue = @(startProgress);
+//	strokeEnd.fillMode = kCAFillModeBoth;
+//	strokeEnd.removedOnCompletion = NO;
+//	strokeEnd.autoreverses = NO;
+//	[self.progressLayer addAnimation:strokeEnd forKey:@"strokeEnd"];
+//
+//	if (self.config.isShowNeedle) {
+//		CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+//		//rotateAnimation.fromValue = @(startProgress * M_PI * 2);
+//		rotateAnimation.toValue = @(startProgress * M_PI * 2);
+//		rotateAnimation.duration = 1;
+//		rotateAnimation.fillMode = kCAFillModeForwards;
+//		rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+//		rotateAnimation.removedOnCompletion = NO; //如果这里想设置成一直自旋转，可以设置为MAXFLOAT，否则设置具体的数值则代表执行多少次
+//		[self.lineLayer addAnimation:rotateAnimation forKey:@"rotation"];
+//	}
+//
+//	{
+//	CABasicAnimation *strokeEnd = CABasicAnimation.animation;
+//	strokeEnd.keyPath = @"strokeEnd";
+//	strokeEnd.duration = duration ;
+//	strokeEnd.beginTime = CACurrentMediaTime() + 1;
+//	strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+//	strokeEnd.fromValue = @(startProgress);
+//	strokeEnd.toValue = @(endProgress);
+//	strokeEnd.fillMode = kCAFillModeBoth;
+//	strokeEnd.removedOnCompletion = NO;
+//	strokeEnd.autoreverses = NO;
+//	[self.progressLayer addAnimation:strokeEnd forKey:@"strokeEnd"];
+//
+//	if (self.config.isShowNeedle) {
+//		CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+//		rotateAnimation.fromValue = @(startProgress * M_PI * 2);
+//		rotateAnimation.toValue = @(endProgress * M_PI * 2);
+//		rotateAnimation.duration = duration;
+//		rotateAnimation.beginTime = CACurrentMediaTime() + 1;
+//		rotateAnimation.fillMode = kCAFillModeForwards;
+//		rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+//		rotateAnimation.removedOnCompletion = NO; //如果这里想设置成一直自旋转，可以设置为MAXFLOAT，否则设置具体的数值则代表执行多少次
+//		[self.lineLayer addAnimation:rotateAnimation forKey:@"rotation"];
+//	}
+//	}
+}
+
+- (void)updateProgress:(CGFloat)startProgress endProgress:(CGFloat)endProgress duration:(CGFloat)duration {
+//	[self.progressLayer removeAnimationForKey:@"strokeEnd"];
+//	[self.lineLayer removeAnimationForKey:@"rotation"];
+//
+//	self.progressLayer.strokeEnd = startProgress;
+//	self.lineLayer.transform = CATransform3DMakeRotation(startProgress * M_PI * 2, 0, 0, 1);
+	//TODO:此处需要优化, 比如动画完成后重新启动动画的话,不会走进度
+	CAShapeLayer *currLayer = [self.progressLayer presentationLayer];
+	CGFloat currProgress = currLayer.strokeEnd;
+	if (currProgress != startProgress) {
+		[self.progressLayer removeAnimationForKey:@"strokeEnd"];
+		[self.progressLayer removeAnimationForKey:@"rotation"];
+		
+		CABasicAnimation *strokeEnd = CABasicAnimation.animation;
+		strokeEnd.keyPath = @"strokeEnd";
+		strokeEnd.duration = 1;
+		strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+		strokeEnd.fromValue = @(currProgress);
+		strokeEnd.toValue = @(startProgress);
+		strokeEnd.fillMode = kCAFillModeForwards;
+		strokeEnd.removedOnCompletion = NO;
+		[self.progressLayer addAnimation:strokeEnd forKey:@"strokeEnd1"];
+		
+		if (self.config.isShowNeedle) {
+			CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+			rotateAnimation.fromValue = @(currProgress * M_PI * 2);
+			rotateAnimation.toValue = @(startProgress * M_PI * 2);
+			rotateAnimation.duration = 1;
+			rotateAnimation.fillMode = kCAFillModeForwards;
+			rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+			rotateAnimation.removedOnCompletion = NO; //如果这里想设置成一直自旋转，可以设置为MAXFLOAT，否则设置具体的数值则代表执行多少次
+			[self.lineLayer addAnimation:rotateAnimation forKey:@"rotation1"];
+		}
+	}
+	
+	CABasicAnimation *strokeEnd = CABasicAnimation.animation;
+	strokeEnd.keyPath = @"strokeEnd";
+	strokeEnd.duration = duration;
+	strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+	strokeEnd.fromValue = @(startProgress);
+	strokeEnd.toValue = @(endProgress);
+	strokeEnd.beginTime = CACurrentMediaTime() + currProgress != startProgress ? 1 : 0;
+	strokeEnd.fillMode = kCAFillModeForwards;
+	strokeEnd.removedOnCompletion = NO;
+	[self.progressLayer addAnimation:strokeEnd forKey:@"strokeEnd"];
+	
+	if (self.config.isShowNeedle) {
+		CABasicAnimation *rotateAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
+		rotateAnimation.fromValue = @(startProgress * M_PI * 2);
+		rotateAnimation.toValue = @(endProgress * M_PI * 2);
+		rotateAnimation.duration = duration;
+		rotateAnimation.beginTime = CACurrentMediaTime() + currProgress != startProgress ? 1 : 0;
+		rotateAnimation.fillMode = kCAFillModeForwards;
+		rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+		rotateAnimation.removedOnCompletion = NO; //如果这里想设置成一直自旋转，可以设置为MAXFLOAT，否则设置具体的数值则代表执行多少次
+		[self.lineLayer addAnimation:rotateAnimation forKey:@"rotation"];
+	}
+}
+
 - (void)setProgress:(CGFloat)progress animated:(BOOL)animated duration:(CGFloat)duration {	
 	if (self.progress == progress) {
 		return;

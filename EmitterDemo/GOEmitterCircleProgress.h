@@ -43,7 +43,13 @@
 /// @param config 属性
 - (instancetype)initWithFrame:(CGRect)frame config:(GOProgressConfig *)config;
 
+//动画执行多次导致手机发热严重, 现在换个方法实现
 - (void)setProgress:(CGFloat)progress animated:(BOOL)animated duration:(CGFloat)duration;
+
+//这个修改不支持颜色变化的进度, 减少动画启动次数
+- (void)updateProgress:(CGFloat)startProgress endProgress:(CGFloat)endProgress duration:(CGFloat)duration;
+
+- (void)removeAllAnimation;
 
 
 @end
