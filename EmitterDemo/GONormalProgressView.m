@@ -116,12 +116,10 @@
 	if (self.config.isRotate) {
 		return;
 	}
-
-	if (self.progress == progress) {
-		return;
-	}
-	
 	if (self.config.isUpdateColor) {
+		if (self.animationToValue == progress) {
+			return;
+		}
 		if (self.displayLink) {
 			[self.displayLink removeFromRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
 			[self.displayLink invalidate];
@@ -132,21 +130,28 @@
 		self.animationStartTime = CACurrentMediaTime();
 		self.animationFromValue = self.progress;
 		self.animationToValue = progress;
-		self.realTimeProgress = 0.0;
+		//self.realTimeProgress = 0.0;
 		self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(animateProgress:)];
 		[self.displayLink addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
 	}
 	else {
-		CABasicAnimation *strokeEnd = CABasicAnimation.animation;
-		strokeEnd.keyPath = @"strokeEnd";
-		strokeEnd.duration = 1;
-		strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
-		strokeEnd.fromValue = @(self.progress);
-		strokeEnd.toValue = @(progress);
-		strokeEnd.fillMode = kCAFillModeForwards;
-		strokeEnd.removedOnCompletion = NO;
-		[self.progressLayer addAnimation:strokeEnd forKey:nil];
+		if (self.progress == progress) {
+			return;
+		}
 		
+		if (animated) {
+			CABasicAnimation *strokeEnd = CABasicAnimation.animation;
+			strokeEnd.keyPath = @"strokeEnd";
+			strokeEnd.duration = 1;
+			strokeEnd.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+			strokeEnd.fromValue = @(self.progress);
+			strokeEnd.toValue = @(progress);
+			strokeEnd.fillMode = kCAFillModeForwards;
+			strokeEnd.removedOnCompletion = NO;
+			[self.progressLayer addAnimation:strokeEnd forKey:nil];
+		} else {
+			self.progressLayer.strokeEnd = self.progress;
+		}
 		self.progress = progress;
 	}
 }

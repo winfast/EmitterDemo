@@ -354,26 +354,29 @@
 }
 
 - (void)setProgress:(CGFloat)progress animated:(BOOL)animated duration:(CGFloat)duration {	
-	if (self.progress == progress) {
-		return;
-	}
-	
 	if (self.config.isUpdateColor) {
+		
+		if (self.animationToValue == progress) {
+			return;
+		}
+		
 		if (self.displayLink) {
 			[self.displayLink removeFromRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
 			[self.displayLink invalidate];
 			self.displayLink = nil;
 		}
-		
-		self.animationduration = duration;
 		self.animationStartTime = CACurrentMediaTime();
 		self.animationFromValue = self.progress;
 		self.animationToValue = progress;
-		self.realTimeProgress = 0.0;
+		self.progress = progress;
+		//self.realTimeProgress = 0.0;
 		self.displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(animateProgress:)];
 		[self.displayLink addToRunLoop:NSRunLoop.mainRunLoop forMode:NSRunLoopCommonModes];
 	}
 	else {
+		if (self.progress == progress) {
+			return;
+		}
 		CABasicAnimation *strokeEnd = CABasicAnimation.animation;
 		strokeEnd.keyPath = @"strokeEnd";
 		strokeEnd.duration = duration;
@@ -393,6 +396,8 @@
 			rotateAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
 			rotateAnimation.removedOnCompletion = NO; //如果这里想设置成一直自旋转，可以设置为MAXFLOAT，否则设置具体的数值则代表执行多少次
 			[self.lineLayer addAnimation:rotateAnimation forKey:@"rotation"];
+		} else {
+			self.progressLayer.strokeEnd = 1;
 		}
 		self.progress = progress;
 	}
@@ -404,11 +409,17 @@
 			self.animationduration = 1;
 		}
 		CGFloat dt = (self.displayLink.timestamp - self.animationStartTime) / self.animationduration;
-		if (dt >= self.animationduration) {
+		if (dt >= 1.0) {
 			[self.displayLink invalidate];
 			self.displayLink = nil;
 		}
 		self.realTimeProgress = self.animationFromValue + dt * (self.animationToValue - self.animationFromValue);
+		
+		if (self.realTimeProgress >= 1.0) {
+			self.realTimeProgress = 1.0;
+		} else if (self.realTimeProgress <= 0) {
+			self.realTimeProgress = 0.0;
+		}
 
 		NSInteger endColorIndex = 0;
 		NSInteger locationCount = self.config.locations.count;
@@ -521,6 +532,8 @@
     return [UIColor colorWithRed:r green:g blue:b alpha:1];
 }
 
+
+
 @end
 
 @interface GOLayer ()
@@ -622,6 +635,7 @@ void getPointsFromBezier(void *info,const CGPathElement *element){
     }
     
 }
+
 
 @end
 
